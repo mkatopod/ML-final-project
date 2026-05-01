@@ -1,0 +1,51 @@
+#Random Forest Model Code: 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import LabelEncoder
+
+df = pd.read_csv(r"C:\Users\kitty\Downloads\foodandnut\comprehensive_foods_usda.csv")
+
+features = [
+    "calories", "protein_g", "fat_g", "carbs_g", "fiber_g",
+    "sugar_g", "sodium_mg", "iron_mg", "calcium_mg", "vitamin_c_mg"
+]
+
+df = df[features + ["food_category", "health_score"]]
+
+df[features] = df[features].fillna(df[features].median())
+
+label_encoder = LabelEncoder()
+df["food_category"] = label_encoder.fit_transform(df["food_category"])
+
+X = df.drop("health_score", axis=1)
+y = df["health_score"]
+
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size = 0.2, random_state = 42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size = 0.5, random_state = 42)
+
+regressor = RandomForestRegressor(n_estimators=200, random_state=42)
+regressor.fit(X_train, y_train)
+
+fig, axes = plt.subplots(2, 5, figsize=(20, 10))
+axes = axes.flatten()
+
+for i, feature in enumerate(features):
+    X_grid = np.linspace(X_train[feature].min(), X_train[feature].max(), 100).reshape(-1, 1)
+    X_mean = X_train.mean().values.reshape(1, -1)
+
+    X_temp = np.repeat(X_mean, len(X_grid), axis=0)
+    X_temp[:, i] = X_grid.flatten()
+    y_pred = regressor.predict(X_temp)
+
+    axes[i].scatter(X_train[feature], y_train, color = 'blue', alpha = 0.4, label = 'Actual Data')
+    axes[i].plot(X_grid, y_pred, color = 'green', linewidth = 2, label = 'Prediction')
+    axes[i].set_title(feature)
+    axes[i].set_xlabel(feature)
+    axes[i].set_ylabel("Health Score")
+
+plt.suptitle("Random Forest Regression Predictions", fontsize = 20)
+plt.tight_layout()
+plt.show()
