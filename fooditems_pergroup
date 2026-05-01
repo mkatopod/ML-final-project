@@ -1,0 +1,31 @@
+#Boxplot Code:
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+nutritionDataset = pd.read_csv(r"C:\Users\kitty\Downloads\foodandnut\comprehensive_foods_usda.csv")
+
+food_groups = [
+    "Fruits and Fruit Juices",
+    "Vegetables and Vegetable Products",
+    "Cereal Grains and Pasta",
+    "Beef Products",
+    "Dairy and Egg Products",
+    "Sweets"
+]
+
+subset_df = nutritionDataset[nutritionDataset["food_category"].isin(food_groups)]
+
+group_counts = subset_df["food_category"].value_counts().reset_index()
+group_counts.columns = ["food_category", "count"]
+
+#Barplot: 
+sns.set(style = "whitegrid", palette = "muted")
+plt.figure(figsize = (8, 6))
+sns.barplot(data = group_counts, x = "food_category", y = "count", palette = "pastel")
+plt.title("Number of Food Items per Food Group")
+plt.xlabel("Food Category")
+plt.ylabel("Number of Items")
+plt.xticks(rotation = 45)
+plt.tight_layout()
+plt.show()
