@@ -1,0 +1,48 @@
+#Barplot Code:
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+nutritionDataset = pd.read_csv(r"C:\Users\kitty\Downloads\foodandnut\comprehensive_foods_usda.csv")
+
+#For Testing: Prints first 20 food categories
+#print(nutrition_df["food_category"].unique()[:20])  
+
+food_groups = [
+    "Fruits and Fruit Juices",
+    "Vegetables and Vegetable Products",
+    "Cereal Grains and Pasta",
+    "Beef Products",
+    "Dairy and Egg Products",
+    "Sweets"
+]
+
+subset_df = nutritionDataset[nutritionDataset["food_category"].isin(food_groups)]
+
+avg_macros = (
+    subset_df.groupby("food_category")[["protein_g", "fat_g", "carbs_g"]]
+    .mean()
+    .reset_index()
+)
+
+avg_macros_plotting = avg_macros.melt(
+    id_vars = "food_category", var_name = "Macronutrient", value_name = "AverageValue"
+)
+
+#Barplot: 
+sns.set(style = "whitegrid", palette = "muted")
+plt.figure(figsize = (10, 6))
+sns.barplot(
+    data = avg_macros_plotting,
+    x = "food_category",
+    y = "AverageValue",
+    hue = "Macronutrient"
+)
+plt.title("Average Macronutrient Levels")
+plt.xlabel("Food Category")
+plt.ylabel("Average Nutrient Value (per 100g)")
+plt.xticks(rotation = 45)
+plt.legend(title = "Macronutrient")
+plt.tight_layout()
+plt.show()
+
