@@ -1,0 +1,31 @@
+#Pairplot Code: 
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+nutritionDataset = pd.read_csv(r"C:\Users\kitty\Downloads\foodandnut\comprehensive_foods_usda.csv")
+
+food_groups = [
+    "Fruits and Fruit Juices",
+    "Vegetables and Vegetable Products",
+    "Cereal Grains and Pasta",
+    "Beef Products",
+    "Dairy and Egg Products",
+    "Sweets"
+]
+
+subset_df = nutritionDataset[nutritionDataset["food_category"].isin(food_groups)]
+
+nutrient_features = ["protein_g", "fat_g", "carbs_g", "calories", "fiber_g"]
+
+#Pairplot: 
+sns.set(style = "whitegrid")
+pair = sns.pairplot(
+    subset_df[nutrient_features + ["food_category"]],
+    hue = "food_category",
+    palette = "muted",
+    corner = True,
+    plot_kws = {"alpha": 0.6, "s": 40, "edgecolor": "none"}
+)
+pair.fig.suptitle("Pairplot of Nutrient Relationships Across Food Groups", y = 1.02)
+plt.show()
